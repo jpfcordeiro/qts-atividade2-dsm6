@@ -17,13 +17,16 @@
             const response = await fetch("/users");
             const users = await response.json();
             const list = document.getElementById("users");
+            
+            // Pequeno delay para evitar StaleElementReferenceException no Selenium
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
             list.innerHTML = "";
             users.forEach(user => {
                 const li = document.createElement("li");
                 let text = user.name;
                 if (user.email) text += ` (${user.email})`;
                 if (user.age) text += ` - ${user.age} anos`;
-                if (user.email) text += ` (${user.email})`;
                 li.innerText = text;
                 list.appendChild(li);
             });
