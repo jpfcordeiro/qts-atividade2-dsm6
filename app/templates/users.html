@@ -9,6 +9,7 @@
     <h1>Cadastro de Usuários</h1>
     <input type="text" id="name" placeholder="Digite o nome">
     <input type="text" id="email" placeholder="Digite o email">
+    <input type="text" id="age" placeholder="Digite a idade">
     <button id="submit">Cadastrar</button>
     <ul id="users"></ul>
     <script>
@@ -20,6 +21,8 @@
             users.forEach(user => {
                 const li = document.createElement("li");
                 let text = user.name;
+                if (user.email) text += ` (${user.email})`;
+                if (user.age) text += ` - ${user.age} anos`;
                 if (user.email) text += ` (${user.email})`;
                 li.innerText = text;
                 list.appendChild(li);
