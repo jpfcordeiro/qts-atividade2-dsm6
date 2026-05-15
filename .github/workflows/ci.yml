@@ -5,7 +5,7 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-
+  workflow_dispatch:
 jobs:
   testes-e-qualidade:
     runs-on: ubuntu-latest
