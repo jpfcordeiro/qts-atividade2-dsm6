@@ -1,0 +1,62 @@
+from flask import Blueprint, jsonify, request
+from app.services.user_services import (
+    get_all_users,
+    get_user_by_id,
+    create_user,
+    update_user,
+    delete_user,
+    filter_users_by_name,
+)
+
+user_bp = Blueprint("users", __name__, url_prefix="/users")
+
+
+@user_bp.route("", methods=["GET"])
+@user_bp.route("/", methods=["GET"])
+def list_users():
+    name_query = request.args.get("name")
+    if name_query:
+        return jsonify(filter_users_by_name(name_query)), 200
+    return jsonify(get_all_users()), 200
+
+
+@user_bp.route("/<int:user_id>", methods=["GET"])
+def get_user(user_id):
+    user = get_user_by_id(user_id)
+    if not user:
+        return jsonify({"message": "Usuário não encontrado"}), 404
+    return jsonify(user), 200
+
+
+@user_bp.route("", methods=["POST"])
+@user_bp.route("/", methods=["POST"])
+def create():
+    data = request.get_json()
+    if not data or "name" not in data or "email" not in data:
+        return jsonify({"message": "Dados inválidos"}), 400
+    user = create_user(data)
+
+    if user is None:
+        return jsonify({"message": "Usuário já cadastrado ou dados inválidos"}), 400
+
+    return jsonify(user), 201
+
+
+@user_bp.route("/<int:user_id>", methods=["PUT"])
+def update(user_id):
+    data = request.get_json()
+    if not data:
+        return jsonify({"message": "Dados inválidos"}), 400
+    user = update_user(user_id, data)
+    if not user:
+        return jsonify({"message": "Usuário não encontrado ou dados inválidos"}), 400
+    return jsonify(user), 200
+
+
+@user_bp.route("/<int:user_id>", methods=["DELETE"])
+def delete(user_id):
+    user = get_user_by_id(user_id)
+    if not user:
+        return jsonify({"message": "Usuário não encontrado"}), 404
+    delete_user(user_id)
+    return jsonify({"message": "Usuário deletado com sucesso"}), 204

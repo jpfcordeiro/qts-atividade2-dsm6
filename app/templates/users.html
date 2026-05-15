@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Users</title>
+</head>
+
+<body>
+    <h1>Cadastro de Usuários</h1>
+    <input type="text" id="name" placeholder="Digite o nome">
+    <input type="text" id="email" placeholder="Digite o email">
+    <button id="submit">Cadastrar</button>
+    <ul id="users"></ul>
+    <script>
+        async function loadUsers() {
+            const response = await fetch("/users");
+            const users = await response.json();
+            const list = document.getElementById("users");
+            list.innerHTML = "";
+            users.forEach(user => {
+                const li = document.createElement("li");
+                let text = user.name;
+                if (user.email) text += ` (${user.email})`;
+                li.innerText = text;
+                list.appendChild(li);
+            });
+        }
+        document.getElementById("submit").addEventListener("click",
+            async () => {
+                const name = document.getElementById("name").value;
+                const email = document.getElementById("email").value;
+                const ageInput = document.getElementById("age").value;
+                const age = ageInput ? parseInt(ageInput) : null;
+
+                await fetch("/users", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name, email, age })
+                });
+                loadUsers();
+            });
+        loadUsers();
+    </script>
+</body>
+
+</html>
